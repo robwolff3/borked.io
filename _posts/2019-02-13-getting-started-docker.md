@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Getting Started With Docker In Your HomeLab'
+title: 'Getting Started - Docker In Your HomeLab'
 tags: [ 'Docker', 'Homelab', 'Containers', 'DockSTARTer', 'Getting Started' ]
 ---
 
@@ -9,6 +9,8 @@ I know I was intimidated at first, another tool hit the market that that's getti
 # Benefits Of Docker In The Homelab
 
 *"Why would I do this anyway? Everything runs fine now the way it is."* The benefits to using Docker over traditional server administration methods are plentiful, most of which I didn't realize until I had Docker setup wrong. However, once right, I have only reaped the fruits of my labors. Let's talk about the benefits:
+
+<!--more-->
 
 * __Ease of Use__ - Once a container is setup and configured, you never need to worry about maintenance. Need to update a service? Docker will download the new image and swap out the old one with as little downtime as a restart. Did the update break and need to revert? Downgrading is quicker than updating with the previous image still saved on the host. Underlying disk failure? Install Docker on your new system, restore the configuration directory, run Docker Compose and you're back up and fully running in just a few minutes.
 * __Speed and Efficiency__ - Get the segregation of virtualization without the resource waste of guest operating systems. Because there is only one operating system in the virtualization stack under Docker you’re not wasting CPU and memory running many containers. Thereafter I observed an increase unused resources and a boost in performance of the service I run.
@@ -64,7 +66,7 @@ There were three different methods I progressed through in my journey to get Doc
 
 ## DockSTARTer
 
-<img src="assets/getting-started-with-docker/dockstarter.png" alt="DockSTARTer" width="800">
+<img src="/assets/getting-started-with-docker/dockstarter.png" alt="DockSTARTer" width="800">
 
 A great utility that will kickstart you into the world of Docker fast. In just a few clicks the utility takes care of the install of Docker, setup and configuration of the containers in a managed Docker Compose for you behind the scenes. It take some of the control away but little investment is needed on your part.
 
@@ -166,7 +168,7 @@ Edit the image tag of the container in your Docker Compose file to reflect the v
 
 ## Portainer - End Game
 
-<img src="assets/getting-started-with-docker/portainer.png" alt="Portainer" width="1000">
+<img src="/assets/getting-started-with-docker/portainer.png" alt="Portainer" width="1000">
 
 I wanted to add a quick note about Portainer. At first I wasn't sure how useful it was going to be but turned out to be really handy. It's great for all of the management tasks I mentioned above but within a web based GUI. when you need to do a quick thing but don't have a terminal up or like to view your Docker environment visually this tool is great.
 
