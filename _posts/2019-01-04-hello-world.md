@@ -1,9 +1,7 @@
 ---
 layout: post
 title: "Hello World"
-tags:
-  - Hello World
-  - Test
+tags: [ 'Hello World', 'Jekyll' ]
 ---
 
 Hello and welcome to Rob Wolff's personal site. This is the first post serving as a hello world test. In the future soon you will be able to read about the various passions and projects I am working on in my life. In the meantime, below this post, you can see how it all came together.

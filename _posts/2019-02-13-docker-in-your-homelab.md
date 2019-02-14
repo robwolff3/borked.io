@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 'Docker In Your HomeLab -- Getting Started'
-tags: [ 'Docker', 'Homelab', 'Containers', 'DockSTARTer', 'Getting Started' ]
+title: 'Docker In Your HomeLab - Getting Started'
+tags: [ 'Docker', 'Homelab', 'Containers' ]
 ---
 
 I know I was intimidated at first, another tool hit the market that that's getting adoption like wildfire. There are an endless number of avenues to go down in IT, why should I consider this one? I found it was much simpler than I anticipated and the payoff was big. It took me a few days and paradigm changes to get to my final setup and configuration. Hopefully I can cut that timeline down and speed things up for you, to be able to get you on the best Docker solution path for your homelab environment by the time you're done reading this.
