@@ -17,7 +17,11 @@ I know I was intimidated at first, another tool hit the market that that's getti
 * __Dependency Freedom__ - A few services I run in my homelab like HomeAssistant and ZoneMinder have a lot dependencies. When updating I don't have to worry about cleaning up after them overtime. The core app and its decencies are all contained into a single image. Swapping images in and out is with all of their underlying packages / libraries is effortless.
 * __Configuration Consolidation__ - Through the container parameters I can source the individual configurations and persistent data in a singular folder hierarchy. There are reasons you may not want to have all of that sitting in one place but for home use it makes backing up all of my services and their persistent data uncomplicated with a utility like [Borg](https://borgbackup.readthedocs.io/en/stable/).
 
-# Getting Up And Running
+<img src="/assets/getting-started-with-docker/containerdiagram.png" alt="ContainerDiagram" >
+
+---
+
+# Establishing Baseline Understanding
 
 ## Underlying operating system
 
@@ -60,6 +64,8 @@ Some maintenance containers including:
 
 And other supporting services. Chances are you will find a way to run your service in Docker. If not, maybe once you're persuaded by Docker you can contribute an image of your own.
 
+---
+
 # The Different Methods
 
 There were three different methods I progressed through in my journey to get Docker optimized in my homelab. It started with [DockSTARTer](https://dockstarter.com/). I realized pretty quickly it did not give me the level of control I desired coming from a systems administrations background. I then moved everything over to Docker Run commands. It sounded like a smart idea at the time but when you hear about Docker Compose it should be a no brainer.
@@ -79,7 +85,7 @@ This makes it great to test out Docker if you're still unsure. Or if you're not 
 ```bash
 $ docker run -d --name=gawebserver \
     --restart on-failure \
-    -v /home/user/docker/config/gawebserver:/config \
+    -v /home/$USER/docker/config/gawebserver:/config \
     -p 9324:9324 \
     -p 5000:5000 \
     -e CLIENT_SECRET=client_secret.json \
@@ -96,7 +102,7 @@ Above is an example of a Docker Run command in bash. I figured out that I could 
 ## Docker Compose - __*Recommended Method*__
 
 ```yaml
-version: "3.4"
+version: "3"
 services:
 
   gawebserver:
@@ -104,7 +110,7 @@ services:
     image: robwolff3/ga-webserver
     restart: on-failure
     volumes:
-      - /home/user/docker/config/gawebserver:/config
+      - /home/$USER/docker/config/gawebserver:/config
     ports:
       - 9324:9324
       - 5000:5000
@@ -121,6 +127,83 @@ services:
 All of the Docker components are structured in a yaml file. To implement the compose file execute `docker-compose up -d` in the directory of the file. Docker will then apply that config and getting it running to that state. Any time Docker Compose is run after, Docker will apply whatever state is specified in the compose file, even if it requires recreating the container. I would recommend this method if you want granular control and to take advantage of the idempotency it has to offer.
 
 [You can reference the Docker Compose documentation here.](https://docs.docker.com/compose/compose-file/)
+
+---
+
+# Installation And First Run - Linux
+
+There are a lot of installation tutorials out there, I'll do my best to boil it down giving you the quick and dirty of it. When in doubt, reference Docker's installation documentation linked at every step.
+
+### Installing Docker And Command Completion
+
+This is Dockers install script that installs docker-ce through your package manager. They also endorse manually adding their package repository. Check Docker's documentation to make sure you're using the latest version in curl command.
+
+```bash
+$ curl -fsSL get.docker.com | sh
+$ sudo curl -L https://raw.githubusercontent.com/docker/machine/v0.16.0/contrib/completion/bash/docker-machine.bash -o /etc/bash_completion.d/docker-machine
+```
+
+[Docker Installation Documentation](https://docs.docker.com/install/linux/docker-ce/ubuntu/) - [Docker Command Completion Documentation](https://docs.docker.com/machine/completion/)
+
+### Post Installation Steps
+
+These post installation commands add your user to the docker group allowing access without sudo and enables Docker in systemd to start at system startup. Replace $USER with the user you're using.
+
+```bash
+$ sudo usermod -aG docker $USER
+$ sudo systemctl enable docker
+```
+
+[Docker Post Installation Steps Documentation](https://docs.docker.com/install/linux/linux-postinstall/)
+
+### Installing Docker Compose And Command Completion
+
+Docker currently does not use the system package manager to install Docker Compose. Use the Curl command below or Dockers pip alternative. Check Docker's documentation to make sure you're using the latest version the curl commands.
+
+```bash
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
+$ sudo curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
+```
+
+[Docker Compose Installation Documentation](https://docs.docker.com/compose/install/) - [Docker Compose Command Completion Documentation](https://docs.docker.com/compose/completion/)
+
+### Creating The Docker Compose Directory Structure And Compose File
+
+Now that Docker and Docker Compose are installed we need a place store our configuration and persistent date. Below is my recommendation of a simple folder structure that accomplishes this in your home directory.
+
+```bash
+$ mkdir -p ~/docker/compose && \
+    mkdir -p ~/docker/config/portainer && \
+    cd ~/docker/compose && \
+    vim docker-compose.yaml
+```
+
+Paste the configuration below for Portainer or substitute a service of your own.
+
+```yaml
+version: "3"
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/$USER/docker/config/portainer:/data
+    ports:
+      - 9000:9000
+```
+
+### Docker Compose First Run With Portainer
+
+With the directory structure established and our compose file standing by lets run `docker-compose up -d` from the compose directory to establish the service and get it running.
+
+Docker will output INFO logging, once it gets to "Creating portainer ... done" its is setup and ready for use. Browse to your new container at http://IPADDRESS:9000 Setup a admin user, set the Docker environment to local and connect. You're now managing your new Docker environment in your Portainer container.
+
+Haven't had enough? Start adding the additional services you want to run in your docker-compose.yaml file and run `docker-compose up -d`. You'll have your environment migrated over in no time at all.
+
+---
 
 # Maintaining Your Container Environment
 
@@ -165,18 +248,23 @@ I wanted to add a quick note about Portainer. At first I wasn't sure how useful 
 
 [Check out their site to learn more and how to install it here.](https://www.portainer.io/)
 
+---
+
 # Conclusion
 
 Before I started this endeavor I was running HomeAssistant, Mosquitto, Samba and some other services on a Raspberry Pi and was never really thrilled with the performance. Another computer I had was running Plex, ZoneMinder and others as well, everything kind of a mess. Now I have all of my resources consolidated on a single machine, services running off of SSD, archive data on mechanical disk with actual running backups. CPU and memory are way better utilized and shared under Docker than individual guest operating systems. All services running better and easier to manage going forward.
 
 I'm sure I've only scratched the surface of what Docker is capable of. Hopefully my experiences can help you better manage and run your homelab. It would really be a missed opportunity to pass it up.
 
----
-
 ## Further Reading
 
+* [freeCodeCamp - A Beginner-Friendly Introduction to Containers, VMs and Docker](https://medium.freecodecamp.org/a-beginner-friendly-introduction-to-containers-vms-and-docker-79a9e3e119b)
 * [Docker - Get Started](https://docs.docker.com/get-started/)
 * [Docker Run](https://docs.docker.com/engine/reference/run/)
 * [Docker Compose](https://docs.docker.com/compose/compose-file/)
-* [freeCodeCamp - A Beginner-Friendly Introduction to Containers, VMs and Docker](https://medium.freecodecamp.org/a-beginner-friendly-introduction-to-containers-vms-and-docker-79a9e3e119b)
-* [Digital Ocean - How To Install and Use Docker on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04)
+* [Installing Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+* [Installing Docker Compose](https://docs.docker.com/compose/install/)
+
+---
+
+Last updated - February 21, 2019 - [See Previous Revisions](https://github.com/robwolff3/borked.io/blob/master/_posts/2019-02-13-docker-in-your-homelab.md)

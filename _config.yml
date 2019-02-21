@@ -3,7 +3,7 @@ markdown:         kramdown
 highlighter:      rouge
 
 # Setup
-title:            'borked.io'
+title:            'Rob Wolff'
 tagline:          'All things cloud and automation'
 description:      'An IT engineer’s insight on technologies, sometimes rambling thoughts, and journey throughout the world wide web.'
 url:              'https://borked.io'
