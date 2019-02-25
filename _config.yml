@@ -8,6 +8,7 @@ tagline:          'All things cloud and automation'
 description:      'An IT engineer’s insight on technologies, sometimes rambling thoughts, and journey throughout the world wide web.'
 url:              'https://borked.io'
 baseurl:          '/'
+logo:             '/assets/logo.png'
 
 encoding: UTF-8
 excerpt_separator: <!--more-->
@@ -28,3 +29,9 @@ plugins:
 sidebar_home_link:  true
 
 google_analytics: UA-11095519-8
+
+social:
+  name: Rob Wolff
+  links:
+    - https://github.com/robwolff3
+    - https://linkedin.com/in/rob-wolff-b4b8b537
