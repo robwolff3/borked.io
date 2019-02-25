@@ -154,6 +154,8 @@ $ sudo usermod -aG docker $USER
 $ sudo systemctl enable docker
 ```
 
+After adding yourself to the Docker group you may need to logout and back in or restart your ssh session for it to work properly.
+
 [Docker Post Installation Steps Documentation](https://docs.docker.com/install/linux/linux-postinstall/)
 
 ### Installing Docker Compose And Command Completion
@@ -267,4 +269,4 @@ I'm sure I've only scratched the surface of what Docker is capable of. Hopefully
 
 ---
 
-Last updated - February 21, 2019 - [See Previous Revisions](https://github.com/robwolff3/borked.io/blob/master/_posts/2019-02-13-docker-in-your-homelab.md)
+Last updated - February 25, 2019 - [See Previous Revisions](https://github.com/robwolff3/borked.io/blob/master/_posts/2019-02-13-docker-in-your-homelab.md)
