@@ -8,26 +8,36 @@ I know I was intimidated at first, another tool hit the market that that's getti
 
 # Benefits Of Docker In The Homelab
 
-*"Why would I do this anyway? Everything runs fine now the way it is."* The benefits to using Docker over traditional server administration methods are plentiful, most of which I didn't realize until I had Docker setup wrong. However, once right, I have only reaped the fruits of my labors. Let's talk about the benefits:
+*"Why would I do this anyway? Everything runs fine now the way it is."* The benefits to using Docker over traditional server administration methods are plentiful, most of which I didn't realize until I had Docker setup wrong. However, once right, I have only reaped the fruits of my labors.
 
 <!--more-->
+
+### What is a Container?
+
+Virtual machines and containers attempt to solve similar problems, isolating services and their dependencies, however containers do it with much less overhead and are exceedingly flexible. Without getting into too much detail, Docker under the hood shares some of the host system resources in a read only fashion while emulating others. This allows the containers to be virtualized, thinking they are their own system, without the overhead of an entire guest os. Being so light weight, we can segregate services and tiers at a granular level without wasting resources. Then at this level we can add, update and remove containers in a fraction of the time and without interruption as appose to entire VMs.
+
+How does this apply to my home server? Before I was running multiple services on a single operating system making a mess after updates and uninstalls. Or I'd run multiple virtual machines wasting resources on my small server. Containers give me the best of both worlds, updating services without python version messes, swapping out a complete image and saving resources running a single guest os. Still not sold? Check out [freeCodeCamps post explaining containerization in-depth](https://medium.freecodecamp.org/a-beginner-friendly-introduction-to-containers-vms-and-docker-79a9e3e119b).
+
+Conceptually how Docker operates compared to traditional virtualization.
+
+<img src="/assets/getting-started-with-docker/containerdiagram.png" alt="ContainerDiagram" >
+
+Let's talk more about some of the benefits:
 
 * __Ease of Use__ - Once a container is setup and configured, seldom do need to worry about maintenance. Need to update a service? Docker will download the new image and swap out the old one with as little downtime as a restart. Did the update break and need to revert? Downgrading is quicker than updating with the previous image still saved on the host. Underlying disk failure? Install Docker on your new system, restore the configuration directory, run Docker Compose and you're back up and fully running in just a few minutes.
 * __Speed and Efficiency__ - Get the segregation of virtualization without the resource waste of guest operating systems. Because there is only one operating system in the virtualization stack under Docker you’re not wasting CPU and memory running many containers. Thereafter I observed an increase in unused resources and a boost in performance of the service I run.
 * __Dependency Freedom__ - A few services I run in my homelab like HomeAssistant and ZoneMinder have a lot dependencies. When updating I don't have to worry about cleaning up after them overtime. The core app and its decencies are all contained into a single image. Swapping images in and out is with all of their underlying packages / libraries is effortless.
 * __Configuration Consolidation__ - Through the container parameters I can source the individual configurations and persistent data in a singular folder hierarchy. There are reasons you may not want to have all of that sitting in one place but for home use it makes backing up all of my services and their persistent data uncomplicated with a utility like [Borg](https://borgbackup.readthedocs.io/en/stable/).
 
-<img src="/assets/getting-started-with-docker/containerdiagram.png" alt="ContainerDiagram" >
-
 ---
 
-# Establishing Baseline Understanding
+# Establishing A Baseline
 
 ## Underlying operating system
 
 You're going to have to start with a base operating system to put Docker atop of. The hip kids these days seem to be using [Rancher OS](https://rancher.com/) a lightweight operating system built for running containers. [Ubuntu](https://www.ubuntu.com/) is always an easy go to, chances are you’re familiar with it and will be easy to setup. Personally I'm a vanilla [Debian](https://www.debian.org/) guy. It's simple, concise and the source for a lot of operating systems today. That speaks more to my personal and professional past. Choose what you're most comfortable with and will have the easiest time maintaining going forward.
 
-## Components and pieces of it all
+## Container Configuration Components
 
 Under the covers Docker utilizes a few different configuration options. Below are the ones I found myself using the most and are probably going to be helpful for you.
 
@@ -39,6 +49,7 @@ Under the covers Docker utilizes a few different configuration options. Below ar
 * __Environment Variables__ - How to pass variables into your container. Used heavily for configuring the containerized service. Pretty self explanatory.
 * __Host Devices__ - For when a container needs access to host hardware. I've used them in the cases of USB Z-wave, USB Bluetooth, mic and speakers.
 * __Depends On__ - If a container is dependent on another starting before it does, set a Depends On and they will come up in the correct order.
+* __Health Check__ - Useful if you need to preform a health check on a container before considering it healthy. I used a curl health check on Zoneminder to make a dependency on it more reliable.
 
 More on ports: When utilizing a single Docker host all of the running services will share the ip address assigned to that host. The best way to manage this with many services is to utilize a port schema i.e. 9000-9020. Ports exposed inside a container map to ports on the host. They do not have to match allowing a service that listens on port 80 to be exposed on the host as 9003. Further separation can be accomplished with a reverse proxy like [Nginx](https://hub.docker.com/r/linuxserver/letsencrypt/) to map services to domain names and more.
 
@@ -70,7 +81,7 @@ And other supporting services. Chances are you will find a way to run your servi
 
 There were three different methods I progressed through in my journey to get Docker optimized in my homelab. It started with [DockSTARTer](https://dockstarter.com/). I realized pretty quickly it did not give me the level of control I desired coming from a systems administrations background. I then moved everything over to Docker Run commands. It sounded like a smart idea at the time but when you hear about Docker Compose it should be a no brainer.
 
-## DockSTARTer
+## DockSTARTer - Fully Managed
 
 <img src="/assets/getting-started-with-docker/dockstarter.png" alt="DockSTARTer" width="800">
 
@@ -80,29 +91,10 @@ This makes it great to test out Docker if you're still unsure. Or if you're not 
 
 [Learn more about DockSTARTer and how to install it at their site here.](https://dockstarter.com/)
 
-## Docker Run
-
-```bash
-$ docker run -d --name=gawebserver \
-    --restart on-failure \
-    -v /home/$USER/docker/config/gawebserver:/config \
-    -p 9324:9324 \
-    -p 5000:5000 \
-    -e CLIENT_SECRET=client_secret.json \
-    -e DEVICE_MODEL_ID=device_model_id \
-    -e PROJECT_ID=project_id \
-    --device /dev/snd:/dev/snd:rwm \
-    robwolff3/ga-webserver
-```
-
-Above is an example of a Docker Run command in bash. I figured out that I could use these one off commands to run containers not supported by DockSTARTer. Once running then using the standard Docker commands to administer them `docker [ pull start stop restart exec logs ps ]`. Later I ended up with a list of all the Docker Run commands I could execute to get my environment up and running saved in a file. Separating myself from DockSTARTer and giving me more parameter control. After moving over to Docker Compose I believe Docker Run is still useful for running one off containers or testing.
-
-[You can reference the Docker Run documentation here.](https://docs.docker.com/engine/reference/run/)
-
 ## Docker Compose - __*Recommended Method*__
 
 ```yaml
-version: "3"
+version: "3.7"
 services:
 
   gawebserver:
@@ -124,15 +116,40 @@ services:
 
 *"Sometimes you have to do it wrong a few times before you learn enough to know what the right way is. Or just read the docs, yeah, that would definitely be easier."* This is the an example of a truncated Docker Compose file showing a single service. Additional services would be listed below it, 13 in my case at the time of writing.
 
-All of the Docker components are structured in a yaml file. To implement the compose file execute `docker-compose up -d` in the directory of the file. Docker will then apply that config and getting it running to that state. Any time Docker Compose is run after, Docker will apply whatever state is specified in the compose file, even if it requires recreating the container. I would recommend this method if you want granular control and to take advantage of the idempotency it has to offer.
+All of the Docker components are structured in a yaml file. To implement the compose file execute `docker-compose up -d` in the directory of the file. Docker will then apply that config and getting it running to that state. Any time Docker Compose is run after, Docker will apply whatever state is specified in the compose file, even if it requires recreating the container. I would recommend this method if you want granular control and to take advantage of the idempotency Docker Compose has to offer.
 
 [You can reference the Docker Compose documentation here.](https://docs.docker.com/compose/compose-file/)
+
+## Docker Run - One-off's And Testing
+
+```bash
+$ docker run -d --name=gawebserver \
+    --restart on-failure \
+    -v /home/$USER/docker/config/gawebserver:/config \
+    -p 9324:9324 \
+    -p 5000:5000 \
+    -e CLIENT_SECRET=client_secret.json \
+    -e DEVICE_MODEL_ID=device_model_id \
+    -e PROJECT_ID=project_id \
+    --device /dev/snd:/dev/snd:rwm \
+    robwolff3/ga-webserver
+```
+
+Above is an example of a Docker Run command in bash. I figured out that I could use these one off commands to run containers not supported by DockSTARTer. Once running then using the standard Docker commands to administer them `docker [ pull start stop restart exec logs ps ]`. Later I ended up with a list of all the Docker Run commands I could execute to get my environment up and running saved in a file. Separating myself from DockSTARTer and giving me more parameter control. After moving over to Docker Compose I believe Docker Run is still useful for running one off containers or testing.
+
+[You can reference the Docker Run documentation here.](https://docs.docker.com/engine/reference/run/)
 
 ---
 
 # Installation And First Run - Linux
 
-There are a lot of installation tutorials out there, I'll do my best to boil it down giving you the quick and dirty of it. When in doubt, reference Docker's installation documentation linked at every step.
+### Underlying Machine and Operating System
+
+I'm going to start off with a few assumptions: You have a functioning server, a Linux distribution installed, the server has internet access, has ssh setup, users/privileges are correct. If I've lost you so far, refer to this [HowToForge tutorial on how to install Ubuntu 18.04 LTS](https://www.howtoforge.com/tutorial/ubuntu-lts-minimal-server/).
+
+### Docker and Docker Compose
+
+There are a lot of installation tutorials out there for Docker, I have boiled it down to the most convenient way to install it. When in doubt, reference Docker's installation documentation linked at every step.
 
 ### Installing Docker And Command Completion
 
@@ -154,8 +171,6 @@ $ sudo usermod -aG docker $USER
 $ sudo systemctl enable docker
 ```
 
-After adding yourself to the Docker group you may need to logout and back in or restart your ssh session for it to work properly.
-
 [Docker Post Installation Steps Documentation](https://docs.docker.com/install/linux/linux-postinstall/)
 
 ### Installing Docker Compose And Command Completion
@@ -170,21 +185,40 @@ $ sudo curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/c
 
 [Docker Compose Installation Documentation](https://docs.docker.com/compose/install/) - [Docker Compose Command Completion Documentation](https://docs.docker.com/compose/completion/)
 
+### Setting up an environment variables file
+
+With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more then I. To create the environment file run `sudo vim /etc/environment` and save the following.
+
+```bash
+PUID=1000
+PGID=999
+TZ=US/Eastern
+CONFIGDIR="/home/$USER/docker/config"
+```
+
+Use the following command to figure out the correct `PUID` and `PGID` to use. I'm using my users `PUID` and the `PGID` of the docker group.
+
+```bash
+USER@machine:~$ id
+uid=1000(USER) gid=1000(USER) groups=1000(USER),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),999(docker)
+```
+
+With the environment file saved, you will need to logout and back in or restart your ssh session for it to work properly. (This is also needed for the group you added earlier)
+
 ### Creating The Docker Compose Directory Structure And Compose File
 
 Now that Docker and Docker Compose are installed we need a place store our configuration and persistent date. Below is my recommendation of a simple folder structure that accomplishes this in your home directory.
 
 ```bash
-$ mkdir -p ~/docker/compose && \
-    mkdir -p ~/docker/config/portainer && \
-    cd ~/docker/compose && \
+$ mkdir -p ~/docker/config/portainer && \
+    cd ~/docker && \
     vim docker-compose.yaml
 ```
 
 Paste the configuration below for Portainer or substitute a service of your own.
 
 ```yaml
-version: "3"
+version: "3.7"
 services:
   portainer:
     container_name: portainer
@@ -192,7 +226,7 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/$USER/docker/config/portainer:/data
+      - ${CONFIGDIR}/portainer:/data
     ports:
       - 9000:9000
 ```
@@ -211,6 +245,8 @@ Haven't had enough? Start adding the additional services you want to run in your
 
 ## Helpful Commands - Docker Compose
 
+Below I use the bash commands `docker` and `docker-compose` interchangeably. Some tasks both commands can do, other tasks one or the other can only do. `docker-compose` can be especially finicky because quite a few commands you must be in the same directory of the compose file to execute. When in doubt refer to the Docker documentation.
+
 These are the commands I use the most to administer my Docker environment. Using the service HomeAssistant as an example:
 
 ### The Basics
@@ -218,29 +254,44 @@ These are the commands I use the most to administer my Docker environment. Using
 * Starting a container: `$ docker start homeassistant`
 * Stopping a container: `$ docker stop homeassistant`
 * Restarting a container: `$ docker restart homeassistant`
-* Listing the running containers: `$ docker ps`
+* Listing the running containers: `$ docker ps` or `$ cd ~/docker/ && docker-compose ps`
 * View the logs of a container: `$ docker logs -f homeassistant`
 * Drop a shell into a container: `$ docker exec -it homeassistant /bin/bash`
 
-
-### Bringing all of the services up or back to state
+### Bringing all of the services up - (or back to state)
 
 ```bash
-$ cd /home/user/docker/compose && \
-    docker-compose up -d
+$ docker-compose -f ~/docker/docker-compose.yml up -d
 ```
 
 ### Updating a specific container
 
 ```bash
 $ docker pull homeassistant/home-assistant && \
-    cd /home/user/docker/compose && \
+    docker-compose -f ~/docker/docker-compose.yml up -d
+```
+
+### Updating all containers
+
+```bash
+$ cd ~/docker/ && \
+    docker-compose pull --ignore-pull-failures && \
     docker-compose up -d
 ```
 
 ### Downgrading a container
 
 Edit the image tag of the container in your Docker Compose file to reflect the version you want running i.e. `image: homeassistant/home-assistant:0.86.4` and then execute `docker-compose up -d`
+
+### Clean up Docker environment
+
+__WARNING__ - This will delete all unused images, volumes and networks.
+
+```bash
+$ docker system prune -f && \
+    docker image prune -f && \
+    docker volume prune -f
+```
 
 ## Portainer - End Game
 
@@ -269,4 +320,4 @@ I'm sure I've only scratched the surface of what Docker is capable of. Hopefully
 
 ---
 
-Last updated - February 25, 2019 - [See Previous Revisions](https://github.com/robwolff3/borked.io/blob/master/_posts/2019-02-13-docker-in-your-homelab.md)
+Last updated - March 5th, 2019 - [See Previous Revisions](https://github.com/robwolff3/borked.io/blob/master/_posts/2019-02-13-docker-in-your-homelab.md)
