@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 'Docker In Your HomeLab - Getting Started'
+cover_image: /assets/getting-started-with-docker/cover.png
 tags: [ 'Docker', 'Homelab', 'Containers' ]
 ---
 
@@ -187,13 +188,13 @@ $ sudo curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/c
 
 ### Setting up an environment variables file
 
-With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more then I. To create the environment file run `sudo vim /etc/environment` and save the following.
+With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more. To create the environment file run `vim ~/docker/.env` and save the following.
 
 ```bash
 PUID=1000
 PGID=999
 TZ=US/Eastern
-CONFIGDIR="/home/$USER/docker/config"
+CONFIGDIR=/home/$USER/docker/config
 ```
 
 Use the following command to figure out the correct `PUID` and `PGID` to use. I'm using my users `PUID` and the `PGID` of the docker group.
@@ -204,6 +205,8 @@ uid=1000(USER) gid=1000(USER) groups=1000(USER),24(cdrom),25(floppy),29(audio),3
 ```
 
 With the environment file saved, you will need to logout and back in or restart your ssh session for it to work properly. (This is also needed for the group you added earlier)
+
+[Docker Env-File Documentation](https://docs.docker.com/compose/env-file/)
 
 ### Creating The Docker Compose Directory Structure And Compose File
 
@@ -282,6 +285,12 @@ $ cd ~/docker/ && \
 ### Downgrading a container
 
 Edit the image tag of the container in your Docker Compose file to reflect the version you want running i.e. `image: homeassistant/home-assistant:0.86.4` and then execute `docker-compose up -d`
+
+### Bringing The Whole Environment Down
+
+```bash
+$ docker-compose -f ~/docker/docker-compose.yml down
+```
 
 ### Clean up Docker environment
 

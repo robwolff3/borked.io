@@ -9,6 +9,11 @@ layout: default
   {% include post-meta.html post=page %}
 
   <div class="post-body">
+
+    {% for post in site.posts %}
+    <img src="{{ post.cover_image }}">
+    {% endfor %}
+
     {{ content }}
     {% include post-tags.html post=page %}
   </div>
