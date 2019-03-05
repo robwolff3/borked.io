@@ -188,9 +188,22 @@ $ sudo curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/c
 
 [Docker Compose Installation Documentation](https://docs.docker.com/compose/install/) - [Docker Compose Command Completion Documentation](https://docs.docker.com/compose/completion/)
 
+### Setting Up The Docker Compose Directory Structure
+
+Now that Docker and Docker Compose are installed we need a place store our configuration and persistent data. Below is my recommendation of a simple folder structure that accomplishes this in your home directory.
+
+```bash
+$ mkdir -p ~/docker/config/portainer && \
+    cd ~/docker
+```
+
 ### Creating An Environment Variables File
 
-With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more. To create the environment file run `vim ~/docker/.env` and save the following. 
+With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more. To create the environment file run and save the following:
+
+```
+$ vim ~/docker/.env
+```
 
 ```bash
 PUID=1000
@@ -212,17 +225,13 @@ _Note:_ This variable method is Docker Compose specific, you must be in the `~/d
 
 [Docker Env-File Documentation](https://docs.docker.com/compose/env-file/)
 
-### Creating The Docker Compose Directory Structure And Compose File
+### Making Your Docker Compose File
 
-Now that Docker and Docker Compose are installed we need a place store our configuration and persistent date. Below is my recommendation of a simple folder structure that accomplishes this in your home directory.
+To create your Docker Compose file, run the following `vim` command and paste the configuration below for Portainer or substitute a service of your own.
 
-```bash
-$ mkdir -p ~/docker/config/portainer && \
-    cd ~/docker && \
-    vim docker-compose.yaml
 ```
-
-Paste the configuration below for Portainer or substitute a service of your own.
+$ vim ~/docker/docker-compose.yaml
+```
 
 ```yaml
 version: "3.7"
