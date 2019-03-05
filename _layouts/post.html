@@ -10,8 +10,8 @@ layout: default
 
   <div class="post-body">
 
-    {% if post.cover_image %}
-    <img src="{{ post.cover_image }}" alt="{{ post.title }}">
+    {% if page.cover-img %}
+    <img src={{ page.cover-img }} alt="Cover Image">
     {% endif %}
 
     {{ content }}

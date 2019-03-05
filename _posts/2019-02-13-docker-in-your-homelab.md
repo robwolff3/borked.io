@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Docker In Your HomeLab - Getting Started'
-cover_image: /assets/getting-started-with-docker/cover.jpg
+cover-img: '/assets/getting-started-with-docker/cover.jpg'
 tags: [ 'Docker', 'Homelab', 'Containers' ]
 ---
 
@@ -192,7 +192,7 @@ With Docker Compose you have the option to use environment variables for dynamic
 
 ```bash
 PUID=1000
-PGID=999
+PGID=1000
 TZ=US/Eastern
 CONFIGDIR=/home/$USER/docker/config
 ```
@@ -201,7 +201,7 @@ Use the following command to figure out the correct `PUID` and `PGID` to use. I'
 
 ```bash
 USER@machine:~$ id
-uid=1000(USER) gid=1000(USER) groups=1000(USER),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),999(docker)
+uid=1000(USER) gid=1000(USER) groups=1000(USER),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),1000(docker)
 ```
 
 With the environment file saved, you will need to logout and back in or restart your ssh session for it to work properly. (This is also needed for the group you added earlier)
