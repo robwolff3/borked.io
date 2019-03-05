@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Hello World]'
+title: 'Hello World'
 cover-img: '/assets/hello-world/cover.jpg'
 tags: [ 'Hello World', 'Jekyll' ]
 ---
