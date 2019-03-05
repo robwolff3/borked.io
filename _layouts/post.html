@@ -11,7 +11,7 @@ layout: default
   <div class="post-body">
 
     {% for post in site.posts %}
-    <img src="{{ post.cover_image }}">
+    <img src="{{ post.cover_image }}" alt="{{ post.title }}">
     {% endfor %}
 
     {{ content }}

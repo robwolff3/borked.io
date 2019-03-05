@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Docker In Your HomeLab - Getting Started'
-cover_image: /assets/getting-started-with-docker/cover.png
+cover_image: /assets/getting-started-with-docker/cover.jpg
 tags: [ 'Docker', 'Homelab', 'Containers' ]
 ---
 
@@ -21,7 +21,7 @@ How does this apply to my home server? Before I was running multiple services on
 
 Conceptually how Docker operates compared to traditional virtualization.
 
-<img src="/assets/getting-started-with-docker/containerdiagram.png" alt="ContainerDiagram" >
+<img src="/assets/getting-started-with-docker/containerdiagram.jpg" alt="ContainerDiagram" >
 
 Let's talk more about some of the benefits:
 
@@ -84,7 +84,7 @@ There were three different methods I progressed through in my journey to get Doc
 
 ## DockSTARTer - Fully Managed
 
-<img src="/assets/getting-started-with-docker/dockstarter.png" alt="DockSTARTer" width="800">
+<img src="/assets/getting-started-with-docker/dockstarter.jpg" alt="DockSTARTer" width="800">
 
 A great utility that will kickstart you into the world of Docker fast. In just a few clicks the utility takes care of the install of Docker, setup and configuration of the containers in a managed Docker Compose for you behind the scenes. It take some of the control away but little investment is needed on your part.
 
@@ -304,7 +304,7 @@ $ docker system prune -f && \
 
 ## Portainer - End Game
 
-<img src="/assets/getting-started-with-docker/portainer.png" alt="Portainer" width="1000">
+<img src="/assets/getting-started-with-docker/portainer.jpg" alt="Portainer" width="1000">
 
 I wanted to add a quick note about Portainer. At first I wasn't sure how useful it was going to be but turned out to be really handy. It's great for all of the management tasks I mentioned above but within a web based GUI. When you need to do a quick thing but don't have a terminal up or like to view your Docker environment visually this tool is great.
 
