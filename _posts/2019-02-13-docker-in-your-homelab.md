@@ -138,6 +138,8 @@ $ docker run -d --name=gawebserver \
 
 Above is an example of a Docker Run command in bash. I figured out that I could use these one off commands to run containers not supported by DockSTARTer. Once running then using the standard Docker commands to administer them `docker [ pull start stop restart exec logs ps ]`. Later I ended up with a list of all the Docker Run commands I could execute to get my environment up and running saved in a file. Separating myself from DockSTARTer and giving me more parameter control. After moving over to Docker Compose I believe Docker Run is still useful for running one off containers or testing.
 
+Need to convert Docker Run commands to a Docker Compose file? [Use composerize.com](https://composerize.com/) It'll convert it for you speeding up the Docker Compose file creation.
+
 [You can reference the Docker Run documentation here.](https://docs.docker.com/engine/reference/run/)
 
 ---
@@ -186,9 +188,9 @@ $ sudo curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/c
 
 [Docker Compose Installation Documentation](https://docs.docker.com/compose/install/) - [Docker Compose Command Completion Documentation](https://docs.docker.com/compose/completion/)
 
-### Setting up an environment variables file
+### Creating An Environment Variables File
 
-With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more. To create the environment file run `vim ~/docker/.env` and save the following.
+With Docker Compose you have the option to use environment variables for dynamic configuration. Below is mine however I find most people run many more. To create the environment file run `vim ~/docker/.env` and save the following. 
 
 ```bash
 PUID=1000
@@ -205,6 +207,8 @@ uid=1000(USER) gid=1000(USER) groups=1000(USER),24(cdrom),25(floppy),29(audio),3
 ```
 
 With the environment file saved, you will need to logout and back in or restart your ssh session for it to work properly. (This is also needed for the group you added earlier)
+
+_Note:_ This variable method is Docker Compose specific, you must be in the `~/docker/` directory when executing Docker Compose commands. Other methods include using `/etc/environment` for global machine variables or `.profile` for user variables.
 
 [Docker Env-File Documentation](https://docs.docker.com/compose/env-file/)
 
@@ -264,14 +268,16 @@ These are the commands I use the most to administer my Docker environment. Using
 ### Bringing all of the services up - (or back to state)
 
 ```bash
-$ docker-compose -f ~/docker/docker-compose.yml up -d
+$ cd ~/docker/ && \
+    docker-compose up -d
 ```
 
 ### Updating a specific container
 
 ```bash
-$ docker pull homeassistant/home-assistant && \
-    docker-compose -f ~/docker/docker-compose.yml up -d
+$ cd ~/docker/ && \
+    docker pull homeassistant/home-assistant && \
+    docker-compose up -d
 ```
 
 ### Updating all containers
@@ -289,7 +295,8 @@ Edit the image tag of the container in your Docker Compose file to reflect the v
 ### Bringing The Whole Environment Down
 
 ```bash
-$ docker-compose -f ~/docker/docker-compose.yml down
+$ cd ~/docker/ && \
+    docker-compose down
 ```
 
 ### Clean up Docker environment
