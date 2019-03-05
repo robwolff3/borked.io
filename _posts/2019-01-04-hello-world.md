@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "Hello World"
-cover_image: /assets/hello-world/cover.jpg
 tags: [ 'Hello World', 'Jekyll' ]
 ---
 
