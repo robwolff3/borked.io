@@ -103,7 +103,8 @@ services:
     image: robwolff3/ga-webserver
     restart: on-failure
     volumes:
-      - /home/$USER/docker/config/gawebserver:/config
+      - ${CONFIGDIR}/gawebserver/config:/config
+      - ${CONFIGDIR}/gawebserver/assistant:/root/.config/google-assistant-library/assistant
     ports:
       - 9324:9324
       - 5000:5000
@@ -126,7 +127,8 @@ All of the Docker components are structured in a yaml file. To implement the com
 ```bash
 $ docker run -d --name=gawebserver \
     --restart on-failure \
-    -v /home/$USER/docker/config/gawebserver:/config \
+    -v ${CONFIGDIR}/gawebserver/config:/config \
+    -v ${CONFIGDIR}/gawebserver/assistant:/root/.config/google-assistant-library/assistant \
     -p 9324:9324 \
     -p 5000:5000 \
     -e CLIENT_SECRET=client_secret.json \
