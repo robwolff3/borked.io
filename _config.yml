@@ -8,7 +8,7 @@ tagline:          'All things cloud and automation'
 description:      'An IT engineer’s insight on technologies, sometimes rambling thoughts, and journey throughout the world wide web.'
 url:              'https://borked.io'
 baseurl:          '/'
-logo:             '/assets/picture.jpg'
+logo:             '/assets/logo.png'
 
 encoding: UTF-8
 excerpt_separator: <!--more-->
